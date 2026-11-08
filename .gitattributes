@@ -1,0 +1,4 @@
+* -text
+
+# REAPER reads this file with CRLF on Windows; never let git normalise it.
+*.ini -text
