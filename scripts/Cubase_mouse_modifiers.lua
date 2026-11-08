@@ -18,10 +18,10 @@
     Ctrl+左键点击     多选音符
     左键拖动          移动音符 / 空白处框选
     Ctrl+左键拖动     忽略吸附移动 / 空白处反向框选
-    Alt+左键点击      铅笔创建音符
-    Alt+左键拖动      铅笔创建 / 复制音符
-    Ctrl+Alt+左键点击  忽略吸附铅笔创建
+    Alt+左键拖动      铅笔创建音符（单击上下文留空，一次手势完成）
     Ctrl+Alt+左键拖动  忽略吸附铅笔创建 / 复制
+    注：钢琴卷帘的 Alt/Ctrl+Alt 单击位设成 No action，这样按下时
+        不会先触发单击上下文，拖动才能直接画出音符。
 
   橡皮（Erase）相关一律不动，保留 REAPER 原生。
 
@@ -73,9 +73,11 @@ local MAP = {
     { 6, "Copy note ignoring snap" },  -- Ctrl+Alt：Ctrl+Alt+左键拖动 = 忽略吸附复制
   },
   -- MIDI · 钢琴卷帘空白处（单击）
+  -- Alt 单击必须留空，否则按下会先触发单击上下文、画不出音符。
+  -- 留空后 Alt 按下只落到拖动上下文，一次手势就能画音符。
   ["MIDI piano roll left click"] = {
-    { 4, "Insert note" },  -- Alt：Alt+左键点击空白 = 铅笔创建音符
-    { 6, "Insert note ignoring snap" },  -- Ctrl+Alt：Ctrl+Alt+左键点击空白 = 忽略吸附铅笔创建
+    { 4, "No action" },   -- Alt：留给拖动上下文处理
+    { 6, "No action" },   -- Ctrl+Alt：同上
   },
   -- MIDI · 钢琴卷帘空白处（拖动）
   ["MIDI piano roll left drag"] = {

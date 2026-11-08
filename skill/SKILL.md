@@ -117,7 +117,7 @@ REAPER 自己把正确键码写进 `reaper-kb.ini`，不用手算。手写只在
 | 空白拖动 | Ctrl+Alt | `Draw an empty MIDI item ignoring snap` |
 | 音符单击 | 无 / Ctrl | `Select note` / `Toggle note selection` |
 | 音符拖动 | 无 / Ctrl / Alt / Ctrl+Alt | `Move note` / `Move note ignoring snap` / `Copy note` / `Copy note ignoring snap` |
-| 卷帘单击 | Alt / Ctrl+Alt | `Insert note` / `Insert note ignoring snap` |
+| 卷帘单击 | Alt / Ctrl+Alt | `No action`（故意留空，见下） |
 | 卷帘拖动 | 无 / Ctrl | `Marquee select notes` / `Marquee toggle note selection` |
 | 卷帘拖动 | Alt / Ctrl+Alt | `Insert note, drag to extend or change pitch` / `Insert note ignoring snap, ...` |
 
@@ -197,8 +197,28 @@ reaper-kb.ini.bak-before-wheel           滚轮改动前备份
 
 应用脚本要先备份 `reaper-mouse.ini` 到 `MouseMaps/backup-<时间戳>.ReaperMouseMap`，再逐条写入并读回校验，最后弹窗报告「总条目 N ｜ 变更 N ｜ 原本已是该值 N ｜ 失败 N」。失败数必须是 0。
 
-## 六、已知做不到的
+## 六、单击位留空让拖动直接生效
 
-- **Cubase 的「Alt+点击后拖动决定事件长度」**：REAPER 的 click 和 drag 是两个独立上下文，没法一步完成。只能拆成「Alt 点击 = 插入定长事件」+「Alt 拖动 = 画事件」。
+REAPER 的 `left click` 和 `left drag` 是两个独立上下文。按下鼠标时，如果单击位绑了行为，
+它会先触发，拖动上下文就轮不到了。
+
+所以「按住修饰键拖动 = 画东西」这种手势，必须把对应的**单击位设成 `No action`**：
+
+```lua
+r.SetMouseModifier("MIDI piano roll left click", 4, "No action")  -- Alt
+r.SetMouseModifier("MIDI piano roll left click", 6, "No action")  -- Ctrl+Alt
+```
+
+这样 Alt 按下直接落到 `MIDI piano roll left drag`，一次手势画出音符并拖出长度，
+跟 Cubase 的铅笔一致。
+
+**注意 `No action` 读回是 `0`，不是空串。** 只有 `""` 和 `-1` 才表示写入失败——
+把 `0` 当失败会误判。
+
+编曲区没这么做，因为那里的单击位用来插入定长事件，是另一个取舍。
+
+## 七、已知做不到的
+
+- **Cubase 的「Alt+点击后拖动决定事件长度」（编曲区）**：REAPER 的 click 和 drag 是两个独立上下文。编曲区只能拆成「Alt 点击 = 插入定长事件」+「Alt 拖动 = 画事件」。
 - **工具模式**：Cubase 的 Split/Erase/Range 是切换工具后点击，REAPER 没有工具状态，只能靠修饰键模拟单点动作。
 - **橡皮擦**：Cubase 里没有默认修饰键，保留 REAPER 原生（右键拖 = 擦除）最省事。

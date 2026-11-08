@@ -80,5 +80,9 @@
 
 | 修饰键 | 行为 |
 |---|---|
-| Alt | `Insert note` |
-| Ctrl+Alt | `Insert note ignoring snap` |
+| Alt | `No action` |
+| Ctrl+Alt | `No action` |
+
+这里故意留空。REAPER 把单击和拖动当成两个独立上下文，按下时如果单击位有行为，
+会先触发它，拖动画音符就画不出来。留空后 Alt 按下直接落到拖动上下文，
+一次手势就能画音符并拖出长度。
