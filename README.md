@@ -30,8 +30,13 @@ The wheel is *not* part of the mouse-modifier system; `Preferences → Mouse Mod
 | Piano roll click | Alt / Ctrl+Alt | no action (leaves the drag context free) |
 | Piano roll drag | — / Ctrl | marquee select notes / toggle selection |
 | Piano roll drag | Alt / Ctrl+Alt | insert note and drag / insert ignoring snap |
+| CC / velocity lane drag | — / Ctrl | draw or edit CC / marquee select |
+| CC / velocity lane drag | Alt / Ctrl+Alt | insert CC event / insert ignoring snap |
+| CC event drag | — / Ctrl / Alt / Ctrl+Alt | move / move ignoring snap / copy / copy ignoring snap |
+| CC event drag | Ctrl+Shift | edit CC events |
+| CC segment drag | — / Ctrl / Alt / Ctrl+Alt | move / edit curvature / insert point / insert ignoring snap |
 
-Applies to both the arrange view and the MIDI editor. Full table: `docs/mapping-table.zh-CN.md`.
+Applies to the arrange view, the MIDI editor, and the CC/velocity lanes (velocity is a CC lane, so the same three contexts cover both). Full table: `docs/mapping-table.zh-CN.md`.
 
 Eraser behaviour is left as REAPER's native (right-drag) — Cubase has no default modifier for it.
 

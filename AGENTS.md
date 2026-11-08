@@ -52,6 +52,16 @@ These names contain a slash. Writing them with a space silently fails:
 - `MIDI CC event left click/drag`
 - `Media item fade/autocrossfade left drag`
 
+Behaviour names have the same trap. The action list carries both spellings of
+some entries and only one is accepted:
+
+| Accepted (reads back as a value) | Silent no-op (reads back `0`) |
+|---|---|
+| `Draw/edit CC events ignoring selection` | `Draw or edit CC events ignoring selection` |
+
+When a binding reads back `0` and `0` is not what you asked for, suspect the
+name before the context.
+
 These three contexts accept numeric IDs only in REAPER 7.83 — behaviour names
 read back as `0`. Do not add them:
 

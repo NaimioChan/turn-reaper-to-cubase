@@ -48,6 +48,10 @@ metadata:
 - `MIDI CC event left click/drag`
 - `Media item fade/autocrossfade left drag`
 
+**行为名也有同名陷阱**：动作表里同时存在 `Draw/edit CC events ignoring selection`
+和 `Draw or edit CC events ignoring selection`，只有斜杠版能被识别，带空格的写进去读回 `0`。
+遇到「读回 0 但 0 不是我想要的」先怀疑行为名。
+
 这三个在 REAPER 7.83 只认数值 ID，行为名写进去读回是 `0`，不要用：
 `Project tempo/time signature marker left drag`、`Project marker/region edge left drag`、`Project region left drag`。
 
@@ -120,6 +124,11 @@ REAPER 自己把正确键码写进 `reaper-kb.ini`，不用手算。手写只在
 | 卷帘单击 | Alt / Ctrl+Alt | `No action`（故意留空，见下） |
 | 卷帘拖动 | 无 / Ctrl | `Marquee select notes` / `Marquee toggle note selection` |
 | 卷帘拖动 | Alt / Ctrl+Alt | `Insert note, drag to extend or change pitch` / `Insert note ignoring snap, ...` |
+| CC/velocity 车道 | 无 / Ctrl | `Draw/edit CC events ignoring selection` / `Marquee select CC` |
+| CC/velocity 车道 | Alt / Ctrl+Alt | `Insert CC event` / `Insert CC event ignoring snap` |
+| CC 事件 | 无 / Ctrl / Alt / Ctrl+Alt | `Move CC event on one axis only` / `...ignoring snap` / `Copy CC event` / `Copy CC event ignoring snap` |
+| CC 事件 | Ctrl+Shift | `Edit CC events` |
+| CC 线段 | 无 / Ctrl / Alt / Ctrl+Alt | `Move CC segment ignoring time selection` / `Edit CC segment curvature` / `Insert CC event` / `...ignoring snap` |
 
 Cubase 的橡皮擦没有修饰键，保留 REAPER 原生即可。
 
@@ -227,7 +236,47 @@ r.SetMouseModifier("MIDI piano roll left click", 6, "No action")   -- Ctrl+Alt
 三个例外仍然保留绑定，因为单击和拖动互不干扰，且都是常用操作：
 事件本体的 Alt（在鼠标处切开）、音符本体的 Alt（删除音符）、标尺的 Alt（清循环）。
 
-## 七、已知做不到的
+## 五之二、ReaPack 拉不到 GitHub 仓库时
+
+症状：Browse packages 里 ReaTeam / MPL / X-Raym 全报连接失败，但官方那个
+`reapack.com` 仓库正常。用户通常以为是没配代理。
+
+**先分路径测，别急着配代理。** 同一台机器上 github.com 的不同路径行为可能完全不同：
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://github.com/            # 常 200
+curl -s -o /dev/null -w "%{http_code}\n" https://github.com/user/repo/  # 常 200（带尾斜杠）
+curl -s -o /dev/null -w "%{http_code}\n" https://github.com/user/repo   # 需 301 → 可能 504
+curl -s -o /dev/null -w "%{http_code}\n" https://github.com/u/r/raw/master/index.xml  # 需 302 → 可能 504
+curl -s -o /dev/null -w "%{http_code}\n" https://raw.githubusercontent.com/u/r/master/index.xml  # 常 200
+```
+
+规律：**凡是要发生 301/302 跳转的路径挂掉，静态 200 的路径正常**，且
+`raw.githubusercontent.com`、`api.github.com`、`codeload.github.com` 通常没事。
+换代理出口节点（美/日/韩/新都试）行为一致 → 不是节点也不是代理配置问题。
+
+ReaPack 的 7 个默认仓库索引地址和索引里所有 `<source>` 包源都是
+`github.com/.../raw/...` 形式，正好全落在被 504 的区间，所以必然失败。
+
+修法：起一个本地镜像改写索引里的链接（完整实现见
+`%APPDATA%\REAPER\ReaPack-local\`，`README.md` 有全部细节）。要点：
+
+- `/idx/<name>.xml` 拉上游、正则把 `github.com/<u>/<r>/raw/<ref>/<path>`
+  改成 `raw.githubusercontent.com/<u>/<r>/<ref>/<path>`，再返回给 ReaPack
+- `releases/download/...` 那类是 302 到 CDN，也要挂，改用
+  `api.github.com/repos/<u>/<r>/releases/tags/<tag>` 查 asset id，再以
+  `Accept: application/octet-stream` 请求 `assets/<id>`
+- API 匿名额度只有 60/h，用 `gh auth token` 提到 5000/h
+- `reapack.ini` 的 `[remotes]` 填 `http://127.0.0.1:18870/idx/xxx.xml`，
+  官方 `reapack.com` 那一条不动
+
+**用 pythonw.exe 无窗口启动的坑**：std 句柄无效，`sys.stderr.write` 会抛异常
+直接杀死进程，且没有任何可见输出。日志必须写文件。
+
+Windows 上 `SO_REUSEADDR` 允许两个 socket 绑同一端口，会出现两个镜像进程同时
+跑。启动时先探 `/health`，已有服务就退出。
+
+## 六、已知做不到的
 
 - **Cubase 的「Alt+点击后拖动决定事件长度」（编曲区）**：REAPER 的 click 和 drag 是两个独立上下文。编曲区只能拆成「Alt 点击 = 插入定长事件」+「Alt 拖动 = 画事件」。
 - **工具模式**：Cubase 的 Split/Erase/Range 是切换工具后点击，REAPER 没有工具状态，只能靠修饰键模拟单点动作。

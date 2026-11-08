@@ -23,6 +23,14 @@
     注：钢琴卷帘的 Alt/Ctrl+Alt 单击位设成 No action，这样按下时
         不会先触发单击上下文，拖动才能直接画出音符。
 
+  CC / Velocity 车道（velocity 车道就是 CC lane 的一种，共用同一组上下文）
+    无修饰拖动    直接画/改 CC（velocity 同理）
+    Ctrl+拖动     框选 CC / 反向框选
+    Alt+拖动      插入 CC 点
+    Ctrl+Alt+拖动 忽略吸附插入
+    Ctrl+Shift    精细编辑
+    CC 事件本体、CC 线段也套用同一套逻辑（Alt 复制 / Ctrl 忽略吸附 / Ctrl+Alt 复制忽略吸附）
+
   橡皮（Erase）相关一律不动，保留 REAPER 原生。
 
   滚轮四条（水平/纵向缩放、水平/纵向滚动）不在鼠标修饰键体系内，
@@ -87,6 +95,29 @@ local MAP = {
     { 2, "Marquee toggle note selection" },  -- Ctrl：Ctrl+左键拖动 = 反向框选
     { 4, "Insert note, drag to extend or change pitch" },  -- Alt：Alt+左键拖动空白 = 铅笔创建音符
     { 6, "Insert note ignoring snap, drag to extend or change pitch" },  -- Ctrl+Alt：Ctrl+Alt+左键拖动空白 = 忽略吸附铅笔创建
+  },
+  -- CC / Velocity 车道 · 空白处
+  -- 无修饰 = 直接画/改（velocity 车道同理），Ctrl 框选，Alt 插点，Ctrl+Alt 忽略吸附插点
+  ["MIDI CC lane left click/drag"] = {
+    { 0, "Draw/edit CC events ignoring selection" },  -- 无：直接画/改 CC（注意是斜杠，带空格的同名条目 REAPER 不认）
+    { 2, "Marquee select CC" },  -- Ctrl：框选 CC
+    { 4, "Insert CC event" },  -- Alt：插入 CC 点
+    { 6, "Insert CC event ignoring snap" },  -- Ctrl+Alt：忽略吸附插入
+  },
+  -- CC / Velocity 车道 · 事件本体
+  ["MIDI CC event left click/drag"] = {
+    { 0, "Move CC event on one axis only" },  -- 无：移动 CC 事件
+    { 2, "Move CC event on one axis only ignoring snap" },  -- Ctrl：忽略吸附移动
+    { 4, "Copy CC event" },  -- Alt：复制 CC 事件
+    { 6, "Copy CC event ignoring snap" },  -- Ctrl+Alt：忽略吸附复制
+    { 3, "Edit CC events" },  -- Ctrl+Shift：精细编辑
+  },
+  -- CC / Velocity 车道 · 线段
+  ["MIDI CC segment left click/drag"] = {
+    { 0, "Move CC segment ignoring time selection" },  -- 无：移动线段
+    { 2, "Edit CC segment curvature" },  -- Ctrl：改曲率
+    { 4, "Insert CC event" },  -- Alt：线段上插点
+    { 6, "Insert CC event ignoring snap" },  -- Ctrl+Alt：忽略吸附插点
   },}
 
 ---------------------------------------------------------------- 备份
