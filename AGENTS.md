@@ -59,6 +59,20 @@ read back as `0`. Do not add them:
 - `Project marker/region edge left drag`
 - `Project region left drag`
 
+## Click slots must be empty for drag modifiers
+
+- **Alt+click-then-drag is solved, not missing.** Both the arrange view
+  (`Track left click`) and the piano roll (`MIDI piano roll left click`) set their
+  Alt/Ctrl+Alt *click* slots to `No action`, so a press falls through to the drag
+  context and one gesture draws the item or note and sets its length.
+
+  This is the general pattern: **a click slot must be empty for the matching drag
+  modifier to fire on press.** Whenever a modifier gesture "doesn't work", check the
+  click context first.
+
+  `No action` reads back as `0`, not an empty string — only `""` and `-1` mean the
+  write failed.
+
 ## Wheel keycodes
 
 `KEY 255 <keycode> <action_id> <section>`, sections `0` = Main, `32060` = MIDI Editor.
@@ -131,13 +145,6 @@ reports `already up to date, nothing written`; revert reports `verify: OK
 
 ## What cannot be reproduced
 
-- **Alt+click-then-drag to set event length** (arrange view). REAPER treats click
-  and drag as separate contexts. Alt+click inserts a fixed-length item; Alt+drag
-  draws one. There is no single gesture for both.
-
-  The MIDI piano roll works around this by setting the Alt/Ctrl+Alt *click* slots to
-  `No action` (value `0`), so the press falls through to the drag context. `No action`
-  reads back as `0`, not an empty string — only `""` and `-1` mean the write failed.
 - **Tool modes.** Cubase's Split/Erase/Range are tool states. REAPER has no tool
   state, only modifier combinations.
 - **Eraser.** Cubase has no default modifier for it; REAPER's native

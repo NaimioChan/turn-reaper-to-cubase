@@ -110,7 +110,7 @@ REAPER 自己把正确键码写进 `reaper-kb.ini`，不用手算。手写只在
 | 事件拖动 | Ctrl | `Move item ignoring snap` |
 | 事件拖动 | Alt | `Copy item` |
 | 事件拖动 | Ctrl+Alt | `Copy item ignoring snap` |
-| 空白单击 | Alt / Ctrl+Alt | `40142 c`（插入空事件） |
+| 空白单击 | Alt / Ctrl+Alt | `No action`（留给拖动上下文） |
 | 空白拖动 | 无 | `Marquee select items` |
 | 空白拖动 | Ctrl | `Marquee toggle item selection` |
 | 空白拖动 | Alt | `Draw an empty MIDI item` |
@@ -205,17 +205,22 @@ REAPER 的 `left click` 和 `left drag` 是两个独立上下文。按下鼠标�
 所以「按住修饰键拖动 = 画东西」这种手势，必须把对应的**单击位设成 `No action`**：
 
 ```lua
-r.SetMouseModifier("MIDI piano roll left click", 4, "No action")  -- Alt
-r.SetMouseModifier("MIDI piano roll left click", 6, "No action")  -- Ctrl+Alt
+-- 编曲区空白处
+r.SetMouseModifier("Track left click", 4, "No action")             -- Alt
+r.SetMouseModifier("Track left click", 6, "No action")             -- Ctrl+Alt
+-- MIDI 钢琴卷帘空白处
+r.SetMouseModifier("MIDI piano roll left click", 4, "No action")   -- Alt
+r.SetMouseModifier("MIDI piano roll left click", 6, "No action")   -- Ctrl+Alt
 ```
 
-这样 Alt 按下直接落到 `MIDI piano roll left drag`，一次手势画出音符并拖出长度，
+这样 Alt 按下直接落到对应的 `left drag`，一次手势画出事件或音符并拖出长度，
 跟 Cubase 的铅笔一致。
 
 **注意 `No action` 读回是 `0`，不是空串。** 只有 `""` 和 `-1` 才表示写入失败——
 把 `0` 当失败会误判。
 
-编曲区没这么做，因为那里的单击位用来插入定长事件，是另一个取舍。
+三个例外仍然保留绑定，因为单击和拖动互不干扰，且都是常用操作：
+事件本体的 Alt（在鼠标处切开）、音符本体的 Alt（删除音符）、标尺的 Alt（清循环）。
 
 ## 七、已知做不到的
 

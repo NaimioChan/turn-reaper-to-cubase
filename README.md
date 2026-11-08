@@ -22,7 +22,7 @@ The wheel is *not* part of the mouse-modifier system; `Preferences → Mouse Mod
 |---|---|---|
 | Item click | — / Ctrl | select / toggle selection |
 | Item drag | — / Ctrl / Alt / Ctrl+Alt | move / move ignoring snap / copy / copy ignoring snap |
-| Empty track click | Alt / Ctrl+Alt | insert empty item |
+| Empty track click | Alt / Ctrl+Alt | no action (leaves the drag context free) |
 | Empty track drag | — / Ctrl | marquee select / toggle selection |
 | Empty track drag | Alt / Ctrl+Alt | draw empty MIDI item / draw ignoring snap |
 | MIDI note click | — / Ctrl | select / toggle selection |
@@ -87,14 +87,12 @@ To confirm by hand, watch the arrange view:
 
 ## Known limits
 
-- **Alt+click-then-drag to set event length** in the arrange view cannot be reproduced. REAPER treats click and drag as separate contexts; Alt+click inserts a fixed-length item and Alt+drag draws one. Setting a length still needs the right edge.
-
-  In the MIDI piano roll this is solved: the Alt and Ctrl+Alt *click* slots are set to
-  `No action`, so a press with Alt falls straight through to the drag context and one
-  gesture draws a note. The same trick would work in the arrange view, but there the
-  click slot is used for inserting a fixed-length item, so it is left as-is.
 - **Tool modes** (Split, Erase, Range) do not exist in REAPER. Only single-gesture actions survive as modifier combinations.
 - Three contexts accept numeric IDs only in REAPER 7.83, so tempo markers, project marker edges, and project regions are not covered.
+
+Alt+click-then-drag is handled: the Alt and Ctrl+Alt *click* slots are `No action` in
+both the arrange view and the piano roll, so the press falls through to the drag
+context and one gesture draws the item or note and sets its length.
 
 ## For agents
 

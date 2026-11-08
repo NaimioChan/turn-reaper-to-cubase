@@ -8,10 +8,10 @@
     Ctrl+左键点击     多选事件（加/减选）
     左键拖动          移动事件 / 空白处框选
     Ctrl+左键拖动     忽略吸附移动 / 空白处反向框选
-    Alt+左键点击      铅笔创建事件
-    Alt+左键拖动      铅笔创建 / 复制事件
-    Ctrl+Alt+左键点击  忽略吸附铅笔创建
+    Alt+左键拖动      铅笔创建事件 / 复制事件（单击位留空，一次手势完成）
     Ctrl+Alt+左键拖动  忽略吸附铅笔创建 / 复制
+    注：编曲区和钢琴卷帘的 Alt/Ctrl+Alt 单击位都设成 No action，
+        这样按下时不会先触发单击上下文，拖动才能直接画出东西。
 
   MIDI 编辑器
     左键点击          选择音符
@@ -26,7 +26,7 @@
   橡皮（Erase）相关一律不动，保留 REAPER 原生。
 
   滚轮四条（水平/纵向缩放、水平/纵向滚动）不在鼠标修饰键体系内，
-  由同目录 Apply_Cubase_wheel.py 写进 reaper-kb.ini 的快捷键绑定。
+  由 tools/apply_wheel.py 写进 reaper-kb.ini 的快捷键绑定。
 
   跑法：Actions → New action → Load ReaScript → 选本文件 → Run
   撤销：跑同目录 Restore_REAPER_defaults.lua
@@ -49,9 +49,11 @@ local MAP = {
     { 6, "Copy item ignoring snap" },  -- Ctrl+Alt：Ctrl+Alt+左键拖动 = 忽略吸附复制
   },
   -- 编曲区 · 空白处（单击）
+  -- 同 MIDI 钢琴卷帘：Alt 单击必须留空，否则按下先触发单击上下文、画不出事件。
+  -- 留空后 Alt 按下只落到拖动上下文，一次手势就能画出事件并拖出长度。
   ["Track left click"] = {
-    { 4, "40142 c" },  -- Alt：Alt+左键点击空白 = 铅笔创建（插空事件）
-    { 6, "40142 c" },  -- Ctrl+Alt：Ctrl+Alt+左键点击空白 = 忽略吸附铅笔创建
+    { 4, "No action" },   -- Alt：留给拖动上下文处理
+    { 6, "No action" },   -- Ctrl+Alt：同上
   },
   -- 编曲区 · 空白处（拖动）
   ["Track left drag"] = {
@@ -143,7 +145,7 @@ local msg = string.format(
 if #failLines > 0 then
   msg = msg .. "\n以下没生效：\n" .. table.concat(failLines, "\n") .. "\n"
 end
-msg = msg .. "\n滚轮四条请另跑 Apply_Cubase_wheel.py。"
+msg = msg .. "\n滚轮四条请另跑 tools/apply_wheel.py。"
 
 if _G.CUBASE_MM_HEADLESS then
   local f = io.open(_G.CUBASE_MM_HEADLESS, "w")
